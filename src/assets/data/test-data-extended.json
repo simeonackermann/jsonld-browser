@@ -1,0 +1,60 @@
+[
+  {
+      "@id": "http://example.or/leipzig",
+      "@type": [
+          "http://schema.org/City",
+          "http://schema.org/Class"
+      ],
+      "http://schema.org/name": [
+          {
+              "@value": "Leipzig"
+          }
+      ],
+      "http://schema.org/inhabits": [
+        {
+          "@id": "http://example.or/manu"
+        }
+      ]
+  },
+  {
+    "@id": "http://example.or/berlin",
+    "@type": [
+        "http://schema.org/City"
+    ],
+    "http://schema.org/name": [
+        {
+            "@value": "Berlin"
+        }
+    ]
+},
+  {
+      "@id": "http://example.or/manu",
+      "@type": [
+          "http://schema.org/Person"
+      ],
+      "http://schema.org/name": [
+          {
+              "@value": "Manu Sporny"
+          },
+          {
+            "@value": "Horny"
+            }
+      ],
+      "http://schema.org/website": [
+        {
+            "@id": "http://manu-spornies-site.de/is/external/link"
+        },
+        {
+          "@id": "http://profile.me/manu-sporyn-extern"
+      }
+      ],
+      "http://schema.org/voc#livesIn": [
+          {
+              "@id": "http://example.or/leipzig"
+          },
+          {
+            "@id": "http://example.or/berlin"
+        }
+      ]
+  }
+]
