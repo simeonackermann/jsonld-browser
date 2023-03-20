@@ -11,6 +11,9 @@ export function getValueOf(resource, sep = "/") {
   else if (isObject(resource) && resource.hasOwnProperty('@value')) {
     return resource['@value']
   }
+  else if (isObject(resource)) {
+    return resource
+  }
   else {
     return resource
   }
@@ -18,30 +21,45 @@ export function getValueOf(resource, sep = "/") {
 }
 
 export function getUrlBasename(url, glue = "/") {
-  // Regex to find last word
-  const regex = /([^\/#]+)\/?$/g
+  // Regex to find last word in URL
+  const regex = /([^\/#:]+)\/?$/g
   const getName = (s) => s.substring(s.search(regex))
+
+  if (!url) return null
 
   if (Array.isArray(url)) {
     return url.map(s => getName(s)).join(glue)
   }
+
   return getName(url)
 }
 
+console.log('getUrlBasename', getUrlBasename('Foo'));
+
 
 export function getNodeLabel(node) {
-  const titleProps = [
-      'http://www.w3.org/2000/01/rdf-schema#label',
-      'label',
-      'http://purl.org/dc/terms/title',
-      'title',
-      'http://schema.org/name',
-      'name',
-  ]
+  // const titleProps = [
+  //     'http://www.w3.org/2000/01/rdf-schema#label',
+  //     'label',
+  //     'http://purl.org/dc/terms/title',
+  //     'http://purl.org/dc/elements/1.1/title',
+  //     'title',
+  //     'http://schema.org/name',
+  //     'name',
+  // ]
+  const titleProps = ['label', 'title', 'name']
 
-  const labelProp = Object.keys(node).find(a => titleProps.includes(a))
+  // const labelProp = Object.keys(node).find(a => titleProps.includes(a))
+
+  const labelProp = Object.keys(node).find(a => titleProps.includes(getUrlBasename(a)))
+
   return labelProp
       ? getValueOf(node[labelProp])
       : getUrlBasename(node['@id'])
 }
 
+export function getNodeType(node) {
+  const type = node['@type'] || node['type']
+
+  return type ? getUrlBasename(type) : null
+}

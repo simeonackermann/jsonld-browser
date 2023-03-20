@@ -1,12 +1,14 @@
 <script setup>
-import { reactive, inject, ref } from 'vue'
+import { reactive } from 'vue'
 import {
     getNodeLabel,
     getUrlBasename,
+    getNodeType
 } from '../lib/utils.js'
 import { modelHasResource } from "../lib/store";
 import IconNode from './icons/IconNode.vue'
-import IconEdge from './icons/IconEdge.vue'
+import IconNodeLinked from './icons/IconNodeLinked.vue'
+// import IconEdge from './icons/IconEdge.vue'
 
 // const globalJSONGraph = inject('globalJSON')
 
@@ -16,10 +18,6 @@ const props = defineProps(
             type: [Object, Array],
             required: true
         },
-        // json: {
-        //     type: Object,
-        //     required: true
-        // }
         path: {
             type: Array,
             // required: true
@@ -28,6 +26,16 @@ const props = defineProps(
             type: Array,
             required: true
         },
+        depth: {
+            type: Number,
+            required: true,
+            // default: 1
+        },
+        isBlanknode: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
     }
 )
 
@@ -38,11 +46,7 @@ const state = reactive({
     selected: false
 })
 
-// const nodeRef = ref(null)
-
-// console.log("BrowserItem.vue, node: ", props.node, ' path: ', props.path, ' currentSelectedPath: ', props.currentSelectedPath);
-
-const handleClickEdge = () => {
+const handleClickEdge = (e) => {
     state.selected = true
     onSelectItem(props.path, props.node)
 }
@@ -57,7 +61,6 @@ const handleClickChildItem = (path, node) => {
 }
 
 const onSelectItem = (path, node) => {
-    // console.log('Node.vue, click item', path, node);
     emit('onItemSelected', path, node)
 }
 
@@ -106,18 +109,9 @@ const getEdges = (node) => {
 }
 const edges = getEdges(props.node)
 
-// if (Object.keys(edges).length) {
-//     console.log('Node.vue, edges: ', edges);
-// }
-
 const isCurrentSelected = () => {
-    // console.log('BrowserItem.vue', props.currentSelectedPath);
     return props.currentSelectedPath.toString() == props.path.toString()
 }
-
-// const getUrlBasename = (url) => {
-//     return url.substring(url.lastIndexOf('/')+1)
-// }
 
 const getPathForDom = () => {
     const path = props.path.map(a => getUrlBasename(a))
@@ -129,13 +123,11 @@ const getPathForDom = () => {
 
 <template>
 
-    <!-- TODO framed edges: {{ edges }} -->
-
-    <!-- Edge-Item  -->
-    <div class="item edge" v-if="Array.isArray(node)" :data-path="getPathForDom()">
-        <!-- Edge of {{  node }} ... -->
-        <div class="title-wrapper" v-bind:class="{'active': isCurrentSelected() }" @click="handleClickEdge">
-            <span>
+    <!-- EDGE-ITEM  -->
+    <div v-if="Array.isArray(node)" class="item edge" v-bind:class="{'selected': isCurrentSelected() }" :data-path="getPathForDom()">
+        <div class="active-area" @click="handleClickEdge"></div>
+        <div class="title-wrapper">
+            <span class="toggler">
                 <i class="arrow down" v-show="!state.collapsed" @click="toggleCollapsed"></i>
                 <i class="arrow right" v-show="state.collapsed" @click="toggleCollapsed"></i>
             </span>
@@ -144,30 +136,36 @@ const getPathForDom = () => {
             <span v-if="state.collapsed">[{{ node.length}}]</span>
         </div>
         <div class="item-wrapper node-wrapper" v-show="!state.collapsed" v-for="targetItem in node">
-            <!-- {{ targetNode }} -->
             <browser-item
                 v-if="targetItem['@id']"
                 :node="targetItem"
                 :path="path.concat(targetItem['@id'])"
                 :current-selected-path="currentSelectedPath"
+                :depth="depth + 1"
                 @on-item-selected="handleClickChildItem" />
             <div v-else>[undefined target]</div>
         </div>
     </div>
 
-    <!-- Node-Item -->
-    <div class="item node" v-else-if="node['@id']" :data-path="getPathForDom()">
-        <div class="title-wrapper" v-bind:class="{'active': isCurrentSelected() }" @click="handleClickNode">
-            <span v-if="Object.keys(edges).length">
+    <!-- NODE-ITEM -->
+    <div v-else-if="node['@id'] || isBlanknode"
+        class="item node"
+        v-bind:class="{'selected': isCurrentSelected(), 'blanknode': isBlanknode}"
+        :data-path="getPathForDom()"
+        >
+        <!-- :title="node['@id']" -->
+        <div class="active-area" @click="handleClickNode"></div>
+        <div class="title-wrapper">
+            <span class="toggler" v-if="Object.keys(edges).length">
                 <i class="arrow down" v-show="!state.collapsed" @click="toggleCollapsed"></i>
                 <i class="arrow right" v-show="state.collapsed" @click="toggleCollapsed"></i>
             </span>
-            <!-- TODO align docs with/without edges to same left margin -->
-            <span v-else>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <IconNode />
-            <span class="title">{{ getNodeLabel(node) }}</span>
-            <span class="type" v-if="node['@type']">
-                ({{ getUrlBasename(node['@type']) }})
+            <IconNodeLinked v-if="!isBlanknode && !node['@type'] && modelHasResource(node['@id'])" />
+            <IconNode v-else />
+            <span class="title" title="Foo">{{ getNodeLabel(node) }}</span>
+            {{ (nodeType = getNodeType(node), null) }}
+            <span class="type" v-if="nodeType">
+                ({{ nodeType }})
             </span>
             <span v-if="state.collapsed">[{{ Object.keys(edges).length}}]</span>
         </div>
@@ -177,6 +175,7 @@ const getPathForDom = () => {
                 :node="targetdNodesArr"
                 :path="path.concat(edgeKey)"
                 :current-selected-path="currentSelectedPath"
+                :depth="depth + 1"
                 @on-item-selected="handleClickChildItem"
             />
         </div>
@@ -189,35 +188,71 @@ const getPathForDom = () => {
 </template>
 
 <style scoped>
-/* .node.hasEdges {
-    padding-bottom: .2rem;
- } */
-/*.edge > .node-wrapper {
-    padding-bottom: .2rem;
-}
+.active-area {
+    width: calc(100% + (1em * v-bind('depth')));
+    height: 24px;
+    /* border: 1px solid lightblue; */
+    display: block;
+    position: absolute;
+    left: calc(v-bind('depth') * 1em * -1);
 
-.node > .node-wrapper {
-    padding-bottom: .2rem;
-} */
-.node, .edge {
-    padding-bottom: .2rem;
+    /* border: 1px solid transparent; */
+    /* transition: border 0.2s ease-out; */
 }
+.active-area:hover {
+    background: #e0e0e04b;
+    /* background: lightblue; */
+    cursor: pointer;
+}
+/* .active-area:active {
+    border: 1px solid lightblue;
+} */
 
 .title-wrapper {
     /* margin: .2rem 0; */
     margin-left: -6px;
     padding-left: 2px;
     white-space: nowrap;
-
     display:table;
+    pointer-events: none;
+    /* padding-left: calc(var(--depth) * 0.2rem); */
+    /* padding-left: calc(v-bind('depth') * 0.5rem); */
 }
 
-.title-wrapper:hover {
+/* .title-wrapper:hover {
     cursor: pointer;
+    pointer-events: none;
+} */
+
+.title-wrapper:not(:has(> .toggler)) {
+    padding-left: 14px;
+}
+
+.item.selected > .active-area {
+    /* background: #e0e0e086; */
+    /* background: #288FB8; */
+    background: #09739db5;
+}
+
+.item.selected > .title-wrapper .toggler i,
+.item.selected > .title-wrapper svg,
+.item.selected > .title-wrapper .title,
+.item.selected > .title-wrapper span
+ {
+    color: #ebebeb;
+}
+
+.item.selected > .title-wrapper span:not(.title)
+ {
+    color: #dfdfdf;
+}
+
+.item.selected > .title-wrapper .toggler i {
+    border-color: #ebebeb;
 }
 
 .title-wrapper:not(.active):hover {
-    background: #e5e5e5
+    /* background: #e5e5e5 */
 }
 
 .title-wrapper svg {
@@ -228,8 +263,7 @@ const getPathForDom = () => {
 }
 
 .title-wrapper.active {
-    background: lightgray;
-    /* border-top-left-radius: 5px; */
+    /* background: lightgray; */
 }
 
 .active span:last-child {}
@@ -239,13 +273,21 @@ const getPathForDom = () => {
     vertical-align:middle;
     margin-top: 0px;
     top: 0;
+    /* pointer-events: none; */
 }
+/* .title-wrapper .toggler {
+    pointer-events: auto;
+} */
 .title-wrapper span:last-child {
 }
 
 .title-wrapper span:not(.title) {
     color: #ababab;
 }
+
+/* .left-border {
+    border-left: 1px solid grey;
+} */
 
 .title {
     padding: 0 .3rem;
@@ -254,7 +296,7 @@ const getPathForDom = () => {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
+Q666002892-1
 .type {
     max-width: 200px;;
     overflow: hidden;

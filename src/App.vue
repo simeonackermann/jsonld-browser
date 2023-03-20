@@ -1,27 +1,28 @@
 <script setup>
-import { reactive, inject } from 'vue'
+import { reactive, inject, onUpdated } from 'vue'
 
+import { getModel } from "./lib/store";
 import { getUrlBasename } from "./lib/utils";
 
 import Browser from './components/Browser.vue';
 import Viewer from './components/Viewer.vue';
-// import { createReturnStatement } from '@vue/compiler-core';
-
-
-// let currentSelectedPath = inject('currentSelectedPath')
 
 const state = reactive({
   selectedItem: null,
   selectedPath: [],
 })
 
-// const vFocus1 = {
-  //   mounted: (el) => "FooBarFocus"
-  // }
+const model = getModel()
+
 const rootNode = inject('rootNode')
+
+onUpdated(() => {
+  console.log("App.vue, json:", {model: getModel()});
+})
 
 
 const setSelectedItem = (path, item) => {
+  // console.log('setSelectedItem', 'path', path, 'item', item);
   state.selectedItem = item
   state.selectedPath = path
 }
@@ -36,7 +37,7 @@ const gotoItemByPath = (path) => {
   }
 
   // console.log('GOTO node: ', path, target);
-  target.querySelector(".title").click()
+  target.querySelector(".active-area").click()
 }
 
 // rootNode
@@ -46,45 +47,82 @@ if (rootNode && typeof rootNode === 'string') {
     gotoItemByPath([rootNode])
   }, 1);
 }
+
+let browserWidth = 0
+let browserScrollLeftPos = 0
+
+
+const onDragStart = (e) => {
+  // browserWidth = document.querySelector(".browser-wrapper").clientWidth
+  // console.log('dragstart..., browser scroll pos: ', browserWidth);
+
+  browserScrollLeftPos = document.querySelector(".browser-wrapper").scrollLeft
+
+  // var crt = this.cloneNode(true);
+  // crt.style.backgroundColor = "red";
+
+  // remoge drag&drop shadow
+  // var img = document.createElement("img");
+  e.dataTransfer.setDragImage(document.createElement("img"), 0, 0);
+}
+
+const onDrag = (e) => {
+  browserWidth = document.querySelector(".browser-wrapper").clientWidth
+  // console.log('drag...', browserWidth, e.offsetX);
+  // const plus
+  // if ((!lasOffsetX || lasOffsetX != e.offsetX)) {
+  //   lasOffsetX = e.offsetX
+  //   console.log('lasOffsetX', lasOffsetX);
+  //   console.log('new browser widsth:', browserWidth+lasOffsetX);
+  //   // document.querySelector("#app").style.gridTemplateColumns = `${browserWidth+lasOffsetX}px 5px auto`
+  // }
+
+  if (browserWidth != browserWidth+e.offsetX) {
+    document.querySelector("#app").style.gridTemplateColumns = `${browserWidth+e.offsetX}px 0px auto`
+    document.querySelector(".browser-wrapper").scrollLeft = browserScrollLeftPos
+  }
+
+
+}
+
+const onDragEnd = () => {
+  // console.log('dragend...');
+}
+
+// document.addEventListener("resize", function( event ) {
+//   console.log('document resize...');
+// }, false);
 </script>
 
 <template>
-  <!-- vFocus: {{ v-focus1 }} -->
-  <!-- v-test123: {{  v-test123 }}, <span v-test123>...</span> -->
-  <!-- currentSelectedPath: {{ currentSelectedPath }} -->
-  <div class="browser-wrapper" >
+
+  <div class="browser-wrapper" v-if="Array.isArray(model)">
     <Browser
+      :model="model"
       :current-selected-path="state.selectedPath"
       @on-item-selected="setSelectedItem"
     />
   </div>
 
-  <div class="dragbar"></div>
+  <div v-else style="margin: 2rem;">
+    Undefined Model. View console log for details.
+  </div>
 
-  <div class="viewer-wrapper">
+
+    <div class="dragbar" draggable="true"
+      @dragstart="onDragStart"
+      @drag="onDrag"
+      @dragend="onDragEnd()"
+    ></div>
+
+  <div class="viewer-wrapper" v-if="Array.isArray(model)">
     <Viewer
       :data="state.selectedItem"
       :path="state.selectedPath"
+      :is-blanknode="state.selectedItem !== null && state.selectedPath.length == 0 && !state.selectedItem.hasOwnProperty('@id')"
       @on-select-child-item="gotoItemByPath"
     />
   </div>
-
-  <!-- <div>
-    TODO:
-  </div>
-
-  <div>
-    <div>- somehow view/integrate @context ?!
-    <div>- may allow json data without @id propety ?</div>
-    <div>- column resize, editor/browser</div>
-    <div>- order properties in details view (label/name, descr, ... , edges)</div>
-    <div>- other JSON-LD formats (not framed): expanded, compatced, ... @graph or wiuthout, array/object</div>
-    <div>- test very big json data -> vertical browser max width </div>
-    <div>- browser selected/hover item background color from left to right</div>
-    <div>- importe details viewer format</div>
-    <div>- editor (longterm)</div>
-  </div> -->
-
 </template>
 
 
@@ -94,12 +132,28 @@ if (rootNode && typeof rootNode === 'string') {
   position: relative;
   height: 100%;
 
-  padding-left: 1rem;
+  padding-left: .5rem;
   background-color: #fbfbfb;
   /* grid-row: 1;
   grid-column: auto; */
   overflow: auto;
 	grid-area: browser;
+}
+
+.dragbar {
+  grid-area: dragbar;
+
+    width: 5px;
+    background: transparent;
+    position: absolute;
+    height: 100%;
+    z-index: 999;
+    margin-left: -5;
+}
+
+.dragbar:hover, .dragbar:active {
+  cursor: col-resize;
+  background: grey;
 }
 
 .viewer-wrapper {

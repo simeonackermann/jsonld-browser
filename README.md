@@ -1,14 +1,8 @@
 # JSON-LD Browser
 
-This template should help get you started developing with Vue 3 in Vite.
+Simple [JSON-LD](https://json-ld.org/) Browser. Realizes a treeview browser and details viewer to offer interactive user friendly browsing and viewing through JSON-LD data.
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+![](screenshot.png)
 
 ## Project Setup
 
@@ -21,9 +15,18 @@ npm install
 ```sh
 npm run dev
 ```
-
+<!--
 ### Compile and Minify for Production
 
 ```sh
 npm run build
-```
+``` -->
+
+
+### TODO / Tasks
+
+- online demo (upload and view local JSON-LD files)
+- may view/integrate @context/@raph
+- order properties in details view (label/name, descr, ... , edges)
+- Modes: code mode (view JSON-LD code), editor mode
+- test very big json data -> vertical browser max width

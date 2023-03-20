@@ -5,10 +5,10 @@
 } */
 
 #app {
-  height: calc(100vh);
+  height: calc(100vh - 4rem);
   display: grid;
-  grid-template-areas: 'browser viewer';
-  grid-template-columns: 1fr 2fr;
+  grid-template-areas: 'browser dragbar viewer';
+  grid-template-columns: 1fr 0px 2fr;
   grid-template-rows: 1fr;
 
   margin: 2rem auto;
@@ -38,5 +38,18 @@
 @media (max-width: 1024px) {
   #app {
     margin: 0 auto;
+    height: calc(100vh);
+  }
+}
+
+a {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
   }
 }

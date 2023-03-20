@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg21"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="IconNodeLinked.Inkscape.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview23"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.35355339"
+     inkscape:cx="-179.60512"
+     inkscape:cy="633.56768"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="32"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g2761" />
+  <defs
+     id="defs18" />
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+<!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+<a
+   id="a1303" />
+
+
+
+<g
+   id="g4338"
+   transform="translate(47.057044,-76.191021)">
+  <g
+     id="g2793"
+     transform="matrix(0.26314694,0,0,0.26314694,9.4318777,-7.9805244)"
+     inkscape:export-filename="path192.svg"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96">
+    <g
+       id="g2761">
+      <path
+         d="M 279.21444,891.49983 C 246.63577,911.06868 385.88858,679.63119 162.83665,687.4574 c 0,0 2.64848,61.37231 -14.01132,61.37231 -16.6598,0 -108.801963,-70.71182 -108.801963,-98.281 0,-28.99148 88.282673,-96.17418 107.261883,-96.17418 18.9792,0 15.57085,65.10762 15.57085,65.10762 188.91884,-5.0852 246.01234,194.13914 116.35834,272.01768 z"
+         id="path2759"
+         style="stroke-width:0.382345"
+         sodipodi:nodetypes="sczszcs"
+         inkscape:export-filename="./path2759.svg"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+    </g>
+    <g
+       id="g2763" />
+    <g
+       id="g2765" />
+    <g
+       id="g2767" />
+    <g
+       id="g2769" />
+    <g
+       id="g2771" />
+    <g
+       id="g2773" />
+    <g
+       id="g2775" />
+    <g
+       id="g2777" />
+    <g
+       id="g2779" />
+    <g
+       id="g2781" />
+    <g
+       id="g2783" />
+    <g
+       id="g2785" />
+    <g
+       id="g2787" />
+    <g
+       id="g2789" />
+    <g
+       id="g2791" />
+  </g>
+  <path
+     id="path192"
+     style="stroke-width:0.264583;stroke-dasharray:none"
+     d="m 19.402654,200.31655 0.0053,73.96858 c 0,2.33786 1.894945,4.23334 4.233333,4.23334 h 67.728042 c 2.337858,0 4.233333,-1.89548 4.233333,-4.23334 h -0.238125 v -44.32271 c 0,-9.03986 12.938123,-9.3856 12.938123,-0.0388 v 44.36152 c 0,9.31333 -7.62,16.93333 -16.933331,16.93333 H 23.637695 c -9.353021,0 -16.9333331,-7.58296 -16.9333331,-16.93333 -5.7e-4,-24.74317 -0.00113,-49.48634 -0.0017,-74.22951 -0.072005,-8.18302 12.6999921,-8.15278 12.6999921,0.26092 L 6.7026619,200.05563 m 69.8500001,53.06283 h -38.1 c -3.4925,0 -6.35,2.8575 -6.35,6.35 0,3.4925 2.844271,6.35 6.35,6.35 h 38.1 c 3.505729,0 6.35,-2.84427 6.35,-6.35 0,-3.50573 -2.831042,-6.35 -6.35,-6.35 z"
+     sodipodi:nodetypes="ccssccsssssccccsssssss" />
+  <path
+     d="m 32.948787,239.54909 c 0,3.51896 2.8575,6.35 6.35,6.35 h 38.1 c 3.51896,0 6.35,-2.83104 6.35,-6.35 0,-3.51895 -2.83104,-6.35 -6.35,-6.35 h -38.1 c -3.4925,0 -6.35,2.8575 -6.35,6.35 z"
+     style="stroke-width:0.264583;stroke-dasharray:none"
+     id="path3555" />
+</g>
+</g>
+</svg>
