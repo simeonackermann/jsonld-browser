@@ -10,8 +10,6 @@ import IconNode from './icons/IconNode.vue'
 import IconNodeLinked from './icons/IconNodeLinked.vue'
 // import IconEdge from './icons/IconEdge.vue'
 
-// const globalJSONGraph = inject('globalJSON')
-
 const props = defineProps(
     {
         node: {

@@ -29,4 +29,5 @@ npm run build
 - may view/integrate @context/@raph
 - order properties in details view (label/name, descr, ... , edges)
 - Modes: code mode (view JSON-LD code), editor mode
+- navigation with keyboard (op/down/toggle) in treeview browser
 - test very big json data -> vertical browser max width

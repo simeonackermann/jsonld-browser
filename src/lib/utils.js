@@ -34,8 +34,6 @@ export function getUrlBasename(url, glue = "/") {
   return getName(url)
 }
 
-console.log('getUrlBasename', getUrlBasename('Foo'));
-
 
 export function getNodeLabel(node) {
   // const titleProps = [

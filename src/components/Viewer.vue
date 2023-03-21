@@ -6,8 +6,7 @@ import { getUrlBasename } from '../lib/utils.js'
 import ViewerValue from "./ViewerValue.vue"
 import {
   getResourceFromModel,
-  modelHasResource,
-  getContext
+  modelHasResource
  } from "../lib/store";
 
 const props = defineProps({
@@ -28,8 +27,6 @@ const props = defineProps({
 
 const emit = defineEmits(['onSelectChildItem'])
 
-const context = getContext()
-
 onUpdated(() => {
   console.log("Viewer.vue, json:", {data: props.data, path: props.path, isBlanknode: props.isBlanknode});
 })
@@ -41,39 +38,6 @@ const handleClickChildNode = (path) => {
 const viewPath = (path) => {
   path = path.map(a => getUrlBasename(a))
   return path.join(' > ')
-}
-
-
-const getNodeValueFormatClasses = (value) => {
-  if (typeof value === 'boolean') return 'boolean'
-  if (typeof value === 'number') return 'number'
-
-  return "value"
-}
-
-const getMetaProps = (data) => {
-  return Object.keys(data).filter(a => a.startsWith('@'))
-}
-
-// const isExternalNode = (node) => {
-//   if (Object.keys(node).length > 1) return false
-
-//   return ! modelHasResource(node['@id'])
-// }
-
-const isInternalLink = (key, value) => {
-  if (context && context.hasOwnProperty(key) && context[key]['@type'] == "@id") {
-    return modelHasResource(value)
-  }
-  return false
-}
-
-const isExternalLink = (key, value) => {
-  if (context && context.hasOwnProperty(key) && context[key]['@type'] == "@id") {
-    // TODO may allow prefix links (example my:page)
-    return value.startsWith('http')
-  }
-  return false
 }
 
 </script>

@@ -3,7 +3,11 @@ import App from './App.vue'
 
 import './assets/main.css'
 
-const app = createApp(App)
-// app.provide('rootNode', 'http://example.or/manu')
+const app = createApp(App,
+    {
+        dataFile: "../assets/data/test-data.json",
+        rootNode: 'http://example.or/#jane',
+    }
+)
 
 app.mount('#app')

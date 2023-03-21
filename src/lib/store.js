@@ -1,70 +1,83 @@
+let context = null
+let model = null
 
-import data from "../assets/data/test-data.json"
+export async function fetchLocalData(file) {
+  let data = null
 
+  try {
+      data = await import (file)
+  } catch (error) {
+      return Promise.reject(error)
+  }
+
+  if (data && data.default) {
+      context = data.default.hasOwnProperty('@context')
+          ? Object.assign({}, data['@context'])
+          : null
+      model = prepareModel(data.default)
+      return Promise.resolve(model)
+  }
+
+  return Promise.reject(`Got bad JSON data "${data}" from file "${file}".`)
+}
+
+
+export async function fetchData(file) {
+
+  const res = await fetch(file)
+  return await res.json()
+}
 
 const prepareModel = (json) => {
 
-  const hasId = (d) => {
-    if (!d['@id']) {
-      console.warn('Object in JSON-LD Model does not has property "@id"', d);
+    const hasId = (d) => {
+      if (!d['@id']) {
+        console.warn('Object in JSON-LD Model does not has property "@id"', d);
+        return false
+      }
+      return true
+    }
+
+    if (Array.isArray(json)) {
+      //
+
+    }
+    else if (typeof json === 'object') {
+      if (json['@graph'])
+        json = json['@graph']
+      else
+        json = [json]
+    } else {
       return false
     }
-    return true
+
+    // if (!hasId(json[0])) return false
+
+    if (json[0]['@context']) {
+      // TODO may show @context elsewhere in the Viewer?!
+      delete json[0]['@context']
+      // json[0]['@context'] = false
+    }
+
+    return json
   }
-
-  if (Array.isArray(json)) {
-    //
-
-  }
-  else if (typeof json === 'object') {
-    if (json['@graph'])
-      json = json['@graph']
-    else
-      json = [json]
-  } else {
-    return false
-  }
-
-  // if (!hasId(json[0])) return false
-
-  if (json[0]['@context']) {
-    // TODO may show @context elsewhere in the Viewer?!
-    delete json[0]['@context']
-    // json[0]['@context'] = false
-  }
-
-  return json
-}
-
-const context = data.hasOwnProperty('@context')
-  ? Object.assign({}, data['@context'])
-  : null
-const model = prepareModel(data)
 
 export function getModel() {
-  return model
-}
+    return model
+  }
 
 export function getContext() {
-  return context
-  // return data.hasOwnProperty('@context')
-  //   ? data['@context']
-  //   : null
+    return context
+    // return data.hasOwnProperty('@context')
+    //   ? data['@context']
+    //   : null
 }
-
-// let foo = 'Foobar'
-
-// export function setFoo(val) {
-//   console.log('foo', foo);
-//   foo = val
-// }
 
 export function getResourceFromModel(path) {
-  // console.log('JSON-LD MODEL', model);
-  return model.find(l => l['@id'] == path )
-}
+    if (model === null) return false
+    return model.find(l => l['@id'] == path )
+  }
 
-export function modelHasResource(id) {
-  // console.log('modelHasResource', id);
-  return getResourceFromModel(id) ? true : false
-}
+  export function modelHasResource(id) {
+    return getResourceFromModel(id) ? true : false
+  }
