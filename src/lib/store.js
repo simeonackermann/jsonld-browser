@@ -1,6 +1,17 @@
 let context = null
 let model = null
 
+export function addData(json) {
+
+  if (typeof json !== 'object') return false
+
+  context = json.hasOwnProperty('@context')
+      ? Object.assign({}, json['@context'])
+      : null
+  model = prepareModel(json)
+  return model
+}
+
 export async function fetchLocalData(file) {
   let data = null
 
@@ -11,21 +22,23 @@ export async function fetchLocalData(file) {
   }
 
   if (data && data.default) {
-      context = data.default.hasOwnProperty('@context')
-          ? Object.assign({}, data['@context'])
-          : null
-      model = prepareModel(data.default)
-      return Promise.resolve(model)
+      return Promise.resolve(addData(data.default))
   }
 
   return Promise.reject(`Got bad JSON data "${data}" from file "${file}".`)
 }
 
 
-export async function fetchData(file) {
+export async function fetchRemoteData(file) {
+  let json = null
 
-  const res = await fetch(file)
-  return await res.json()
+  try {
+    const res = await fetch(file)
+    json = await res.json()
+  } catch (error) {
+    return Promise.reject(error)
+  }
+  return Promise.resolve(addData(json))
 }
 
 const prepareModel = (json) => {

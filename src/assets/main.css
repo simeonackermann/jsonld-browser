@@ -1,10 +1,10 @@
 @import './base.css';
 
-/* #app {
+/* #jsonld-browser {
   font-weight: normal;
 } */
 
-#app {
+#jsonld-browser {
   height: calc(100vh - 4rem);
   display: grid;
   grid-template-areas: 'browser dragbar viewer';
@@ -28,7 +28,7 @@
     // place-items: center;
   }
 
-  #app {
+  #jsonld-browser {
     display: grid;
     grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
@@ -36,7 +36,7 @@
 } */
 
 @media (max-width: 1024px) {
-  #app {
+  #jsonld-browser {
     margin: 0 auto;
     height: calc(100vh);
   }

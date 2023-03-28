@@ -1,7 +1,10 @@
 {
-  "name": "json-ld-browser",
-  "version": "0.0.0",
-  "private": true,
+  "name": "jsonld-browser",
+  "version": "0.0.1",
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/jsonld-browser.umd.cjs",
+  "module": "./dist/jsonld-browser.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,5 +17,14 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
     "vite": "^4.0.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/jsonld-browser.js",
+      "require": "./dist/jsonld-browser.umd.cjs"
+    }
+  },
+  "peerDependencies": {
+    "vue": "^3.2.21"
   }
 }

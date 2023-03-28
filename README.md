@@ -4,6 +4,30 @@ Simple [JSON-LD](https://json-ld.org/) Browser. Realizes a treeview browser and 
 
 ![](screenshot.png)
 
+
+## Requirements
+
+VueJS 3
+
+## Usage
+
+```js
+<script>
+import { JSONLDBrowser } from 'json-ld-browser'
+
+const data = {
+    ...
+}
+</script>
+...
+<template>
+    <div id="jsonld-browser">
+        <JSONLDBrowser :data="data" />
+    </div>
+</template>
+
+```
+
 ## Project Setup
 
 ```sh

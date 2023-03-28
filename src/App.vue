@@ -1,8 +1,19 @@
+<script>
+// executed only once
+export const componentName = 'JSONLDBrowser';
+
+export default {
+  name: componentName,
+  inheritAttrs: false,
+  customOptions: {}
+}
+</script>
+
 <script setup>
 import { reactive, inject, onUpdated, onBeforeMount, onMounted } from 'vue'
 
-import { getUrlBasename } from "./lib/utils";
-import { fetchData, fetchLocalData } from "./lib/store"
+import { getUrlBasename, isNonemptyObject } from "./lib/utils";
+import { fetchLocalData, addData } from "./lib/store"
 
 import Dragbar from './components/Dragbar.vue'
 import Browser from './components/Browser.vue';
@@ -10,10 +21,15 @@ import Viewer from './components/Viewer.vue';
 
 const props = defineProps({
   data: {
-    type: Object
+    type: Object,
+    default: null
   },
-  dataFile: { type: String },
-  dataUri: { type: String },
+  dataFile: {
+    type: String ,
+    default: ""
+  },
+  // TODO fetch from URI
+  // dataUri: { type: String },
   rootNode: {
     type: String
   }
@@ -32,16 +48,18 @@ onBeforeMount(async () => {
   if (props.dataFile && typeof props.dataFile === 'string') {
     try {
       state.model = await fetchLocalData(props.dataFile)
-
     } catch (error) {
       console.log('error', error);
       alert(`Error:${error}`)
       state.error = true
     }
   }
+  else if (isNonemptyObject(props.data)) {
+    state.model = addData(props.data)
+  }
   state.isLoading = false
 
-  if (state.model && props.rootNode) {
+  if (isNonemptyObject(state.model) && props.rootNode) {
     setTimeout(() => gotoItemByPath([props.rootNode]), 1);
   }
 })

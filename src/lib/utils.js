@@ -3,6 +3,10 @@ export function isObject(obj) {
   return obj !== null && typeof obj === 'object'
 }
 
+export function isNonemptyObject(obj) {
+  return isObject(obj) && Object.keys(obj).length
+}
+
 export function getValueOf(resource, sep = "/") {
   // TODO add param for:  get all or first or with language or index x ???
   if (Array.isArray(resource)) {
