@@ -4,6 +4,10 @@ Simple [JSON-LD](https://json-ld.org/) Browser. Realizes a treeview browser and 
 
 ![](screenshot.png)
 
+## Demo
+
+https://simeonackermann.github.io/JSONLD-Browser-Online/
+
 
 ## Requirements
 
