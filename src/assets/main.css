@@ -14,12 +14,13 @@
   margin: 2rem auto;
   /* padding: 0 1rem; */
   max-width: 1280px;
-  border: 3px solid lightgray;
+  /* border: 3px solid lightgray; */
   /*
   grid-template-columns: 20% 80%;
   grid-auto-flow: column;
   grid-auto-columns: max-content;
   overflow-x: auto */
+  box-shadow: 0 0 2px 2px #dfdfdf;
 }
 
 /* @media (min-width: 1024px) {
@@ -42,14 +43,14 @@
   }
 }
 
-a {
+#jsonld-browser a {
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
 }
 
 @media (hover: hover) {
-  a:hover {
+  #jsonld-browser a:hover {
     background-color: hsla(160, 100%, 37%, 0.2);
   }
 }

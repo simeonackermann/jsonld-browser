@@ -123,7 +123,7 @@ const getPathForDom = () => {
 
     <!-- EDGE-ITEM  -->
     <div v-if="Array.isArray(node)" class="item edge" v-bind:class="{'selected': isCurrentSelected() }" :data-path="getPathForDom()">
-        <div class="active-area" @click="handleClickEdge"></div>
+        <div class="active-area" @click="handleClickEdge" :title="path.at(-1)"></div>
         <div class="title-wrapper">
             <span class="toggler">
                 <i class="arrow down" v-show="!state.collapsed" @click="toggleCollapsed"></i>
@@ -152,7 +152,7 @@ const getPathForDom = () => {
         :data-path="getPathForDom()"
         >
         <!-- :title="node['@id']" -->
-        <div class="active-area" @click="handleClickNode"></div>
+        <div class="active-area" @click="handleClickNode" :title="node['@id']"></div>
         <div class="title-wrapper">
             <span class="toggler" v-if="Object.keys(edges).length">
                 <i class="arrow down" v-show="!state.collapsed" @click="toggleCollapsed"></i>
@@ -160,7 +160,7 @@ const getPathForDom = () => {
             </span>
             <IconNodeLinked v-if="!isBlanknode && !node['@type'] && modelHasResource(node['@id'])" />
             <IconNode v-else />
-            <span class="title" title="Foo">{{ getNodeLabel(node) }}</span>
+            <span class="title">{{ getNodeLabel(node) }}</span>
             {{ (nodeType = getNodeType(node), null) }}
             <span class="type" v-if="nodeType">
                 ({{ nodeType }})
@@ -202,9 +202,10 @@ const getPathForDom = () => {
     /* background: lightblue; */
     cursor: pointer;
 }
-/* .active-area:active {
+.active-area:active {
     border: 1px solid lightblue;
-} */
+
+}
 
 .title-wrapper {
     /* margin: .2rem 0; */

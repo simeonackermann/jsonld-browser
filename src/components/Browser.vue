@@ -47,7 +47,7 @@ const getPath = (node) => {
 <style scoped>
 .browser {
   position: absolute;
-  min-width: calc(100% - 10px);
+  min-width: calc(100% - 8px);
 }
 </style>
 

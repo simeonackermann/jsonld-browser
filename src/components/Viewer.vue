@@ -126,8 +126,12 @@ const viewPath = (path) => {
   padding: .12rem .5rem;
   font-size: 12px;
   color: gray;
+  height: 24px;
   background-color: #d3d3d3;
-  border-bottom: 1px solid gray;
+  /* border-bottom: 1px solid gray; */
+  /* z-index: 1; */
+  /* box-shadow: 0 0 2px 2px #dfdfdf; */
+
 }
 .node {
   display: grid;
