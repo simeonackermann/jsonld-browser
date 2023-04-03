@@ -29,7 +29,7 @@ const onDrag = (e) => {
   // }
 
   if (browserWidth != browserWidth+e.offsetX) {
-    document.querySelector("#app").style.gridTemplateColumns = `${browserWidth+e.offsetX}px 0px auto`
+    document.querySelector("#jsonld-browser").style.gridTemplateColumns = `${browserWidth+e.offsetX}px 0px auto`
     document.querySelector(".browser-wrapper").scrollLeft = browserScrollLeftPos
   }
 
