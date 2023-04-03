@@ -49,7 +49,6 @@ npm run build
 
 ### TODO / Tasks
 
-- online demo (upload and view local JSON-LD files)
 - may view/integrate @context/@raph
 - order properties in details view (label/name, descr, ... , edges)
 - Modes: code mode (view JSON-LD code), editor mode

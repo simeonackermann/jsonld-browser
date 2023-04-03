@@ -1,16 +1,5 @@
-<script>
-// executed only once
-export const componentName = 'JSONLDBrowser';
-
-export default {
-  name: componentName,
-  inheritAttrs: false,
-  customOptions: {}
-}
-</script>
-
 <script setup>
-import { reactive, inject, onUpdated, onBeforeMount, onMounted } from 'vue'
+import { reactive, onBeforeMount } from 'vue'
 
 import { getUrlBasename, isNonemptyObject } from "./lib/utils";
 import { fetchLocalData, addData } from "./lib/store"
@@ -149,3 +138,14 @@ const gotoItemByPath = (path) => {
 }
 
 </style>
+
+<script>
+// executed only once
+export const componentName = 'JSONLDBrowser';
+
+export default {
+  name: componentName,
+  inheritAttrs: false,
+  customOptions: {}
+}
+</script>
