@@ -1,9 +1,13 @@
 {
     "@context": {
+		"@base": "http://example.org/",
         "dc11": "http://purl.org/dc/elements/1.1/",
         "ex": "http://example.org/vocab#",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
         "ex:contains": {
+            "@type": "@id"
+        },
+        "thingish": {
             "@type": "@id"
         }
     },
@@ -43,18 +47,11 @@
             ],
             "gender": "Other",
             "Description": "Technologist",
-            "http://schema.org/voc#livesIn": [
-                {
-                    "@id": "http://example.or/leipzig"
-                },
-                {
-                    "@id": "http://example.or/berlin"
-                }
-            ],
             "worksFor": [
                 {
                     "@type": "Organization",
                     "name": "Atlanta Rework Works Group Inc.",
+                    "description": "I'm an inline blanknode organization for jane...",
                     "sameAs": [
                         "http://example.org/#atlreworks",
                         "http://example.com/#atlreworks"
@@ -66,8 +63,7 @@
             "sameAs": [
                 "http://example.de/#jane",
                 "http://example.com/#jane"
-            ]
-        },
+            ]        },
         {
             "@id": "http://example.or/leipzig",
             "@type": [
@@ -90,6 +86,7 @@
             "@type": [
                 "http://schema.org/City"
             ],
+            "thingish": "scpwok320r956hjvcQE324g0fwqjs12d",
             "http://schema.org/name": [
                 {
                     "@value": "Berlin"
@@ -101,6 +98,11 @@
             "@type": "ex:Book",
             "dc11:creator": "Plato",
             "dc11:title": "The Republic: A very long title floating over the right side...."
-          }
+        },
+        {
+            "@id": "scpwok320r956hjvcQE324g0fwqjs12d",
+            "@type": ["ex:Thing"],
+            "title": "A Thing"
+        }
     ]
 }

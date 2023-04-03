@@ -57,12 +57,11 @@ const getNodeValueFormatClasses = (value) => {
 // }
 
 const isInternalLink = (key, value) => {
-    if (typeof value !== 'string' || !value.startsWith("http")) return false
-    // TODO may check if its in context?!
-    // if (context && context.hasOwnProperty(key) && context[key]['@type'] == "@id") {
-    //     return modelHasResource(value)
-    // }
-    // return false
+    if (typeof value !== 'string' ) return false
+
+    if (context && context.hasOwnProperty(key) && context[key]['@type'] == "@id") {
+        return true;
+    }
     return modelHasResource(value)
 }
 
@@ -116,9 +115,9 @@ const objectLength = (object) => {
             {{  ( linkedNode = getResourceFromModel(value['@id']), null) }}
             <div v-if="isInternalLink(predicate, value['@id'])" class="node-value link">
                 <span v-if="inArray">- </span>
-                <a class="linked-node" href="#" @click="handleClickChildNode([linkedNode['@id']])">
-                    <IconNode />
-                    {{ getNodeLabel(linkedNode)  }}
+                <a class="linked-node" href="#" @click.prevent="handleClickChildNode([linkedNode['@id']])">
+                  <IconNodeLinked />
+                  {{ getNodeLabel(linkedNode)  }}
                 </a>
                 <span v-if="linkedNode['@type']">({{ getUrlBasename(linkedNode['@type']) }})</span>
 
@@ -139,7 +138,7 @@ const objectLength = (object) => {
         <!-- SUBNODE -->
         <div v-else-if="value.hasOwnProperty('@id')" class="node-value link">
             <span v-if="inArray">- </span>
-            <a class="linked-node" href="#" @click="handleClickChildNode(path.concat(predicate, value['@id']))">
+            <a class="linked-node" href="#" @click.prevent="handleClickChildNode(path.concat(predicate, value['@id']))">
                     <IconNode />
                     {{getNodeLabel(value)}}
 
@@ -159,7 +158,7 @@ const objectLength = (object) => {
 
     <!-- LINK int -->
     <div v-else-if="isInternalLink(predicate, value)" class="node-value link">
-        <a class="linked-node" :href="'#' + encodeURIComponent(value['@id'])" @click="handleClickChildNode([value])">
+        <a class="linked-node" href="#" @click.prevent="handleClickChildNode([value])">
             <IconNodeLinked />
             {{getNodeLabel(getResourceFromModel(value))}}
         </a>
@@ -190,7 +189,7 @@ const objectLength = (object) => {
 .linked-node svg {
     height: 13px;
     width: auto;
-    margin: 0 4px -1px 4px;
+    margin: 0 3px -1px 3px;
 }
 
 .external-site svg {
