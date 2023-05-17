@@ -65,3 +65,31 @@ export function getNodeType(node) {
 
   return type ? getUrlBasename(type) : null
 }
+
+export async function fetchLocalData(file) {
+  let data = null
+
+  try {
+      data = await import (file)
+  } catch (error) {
+      return Promise.reject(error)
+  }
+
+  if (data && data.default) {
+      return Promise.resolve(data.default)
+  }
+
+  return Promise.reject(`Got bad JSON data "${data}" from file "${file}".`)
+}
+
+export async function fetchRemoteData(file) {
+  let json = null
+
+  try {
+    const res = await fetch(file)
+    json = await res.json()
+  } catch (error) {
+    return Promise.reject(error)
+  }
+  return Promise.resolve(json)
+}

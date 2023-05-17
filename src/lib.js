@@ -1,10 +1,6 @@
+/*
+This file is required to define JSONLD-Browser as npm library  ..
+*/
 import App from './App.vue'
 
-export default {
-    install(Vue) {
-        Vue.component(App.name, App)
-    }
-
-}
-
-export { default as JSONLDBrowser } from "./App.vue";
+export { default } from "./App.vue";

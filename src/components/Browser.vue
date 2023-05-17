@@ -1,24 +1,13 @@
 <script setup>
-import Item from './BrowserItem.vue'
 
-console.log('Browser.vue, JSON Model', props.model);
+import Item from './BrowserItem.vue'
 
 const props = defineProps({
   model: {
     type: Array,
     required: true
-  },
-  currentSelectedPath: {
-    type: Array,
-    required: true
-  },
+  }
 })
-
-const emit = defineEmits(['onItemSelected'])
-
-const onItemSelected = (path, node) => {
-  emit('onItemSelected', path, node)
-}
 
 const getPath = (node) => {
   if (!node.hasOwnProperty('@id')) return []
@@ -30,14 +19,12 @@ const getPath = (node) => {
 <template>
   <div class="browser">
 
-    <div v-for="node in model" class="node-wrapper">
+    <div v-for="(node, i) in model" class="node-wrapper">
         <Item
           :node=node
           :path="getPath(node)"
           :is-blanknode="!node.hasOwnProperty('@id')"
-          :current-selected-path="currentSelectedPath"
           :depth="1"
-          @on-item-selected="onItemSelected"
         />
     </div>
 

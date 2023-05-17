@@ -1,96 +1,268 @@
-let context = null
-let model = null
+import { reactive } from 'vue'
 
-export function addData(json) {
+const store = reactive({
 
-  if (typeof json !== 'object') return false
+    context: null,
 
-  context = json.hasOwnProperty('@context')
-      ? Object.assign({}, json['@context'])
-      : null
-  model = prepareModel(json)
-  return model
-}
+    model: null,
 
-export async function fetchLocalData(file) {
-  let data = null
+    currentPath: [],
 
-  try {
-      data = await import (file)
-  } catch (error) {
-      return Promise.reject(error)
-  }
+    currentNode: null,
 
-  if (data && data.default) {
-      return Promise.resolve(addData(data.default))
-  }
+    editPath: [],
 
-  return Promise.reject(`Got bad JSON data "${data}" from file "${file}".`)
-}
+    getModel() {
+        return this.model
+    },
+
+    /**
+     *
+     * @param {JSON} json
+     * @returns
+     */
+    setModel(json) {
+        if (typeof json !== 'object') return false
+
+        const prepare = () => {
+            if (Array.isArray(json)) {
+                //
+
+            }
+            else if (typeof json === 'object') {
+                if (json['@graph'])
+                json = json['@graph']
+                else
+                json = [json]
+            } else {
+                return false
+            }
+
+            // if (!hasId(json[0])) return false
+
+            if (json[0]['@context']) {
+                // TODO may show @context elsewhere in the Viewer?!
+                delete json[0]['@context']
+                // json[0]['@context'] = false
+            }
+
+            return json
+        }
 
 
-export async function fetchRemoteData(file) {
-  let json = null
+        this.context = json.hasOwnProperty('@context')
+            ? Object.assign({}, json['@context'])
+            : null
+        this.model = prepare(json)
 
-  try {
-    const res = await fetch(file)
-    json = await res.json()
-  } catch (error) {
-    return Promise.reject(error)
-  }
-  return Promise.resolve(addData(json))
-}
+        return this.model
+    },
 
-const prepareModel = (json) => {
+    getNode(path) {
+        if (this.model === null || !path.length) return null
 
-    const hasId = (d) => {
-      if (!d['@id']) {
-        console.warn('Object in JSON-LD Model does not has property "@id"', d);
-        return false
-      }
-      return true
+        console.log('getCurrentNode', {model: this.model, path: path} );
+
+        const findNode = (model, path) => {
+            if (!path.length || !model) return null
+
+            // console.log('findNode', {model: JSON.parse(JSON.stringify(model)), path: path[0]});
+
+            let node = undefined
+
+            if (Array.isArray(model)) {
+                node = model.find(l => l['@id'] == path[0] )
+            }
+            // else if (typeof model === 'object' && model.hasOwnProperty(['@id'])) {
+            //     node = model['@id'] == path[0]
+            // }
+            else if (typeof model === 'object') {
+                node = model.hasOwnProperty(path[0])
+                    ? Array.isArray(model[path[0]]) ? model[path[0]] : [model[path[0]]]
+                    : undefined
+            }
+            else {
+                return null
+            }
+
+
+            if (typeof node === 'undefined') return null
+
+            return path.length > 1
+                ? findNode(node, path.slice(1))
+                : node
+        }
+
+        let currentNode = findNode(this.model, path)
+        console.log('currentNode', currentNode);
+
+
+        // return this.model.find(l => l['@id'] == this.currentPath[0] )
+        return currentNode
+
+    },
+
+
+    updateCurentNode(newNode) {
+        return this.updateNode(this.currentPath, newNode)
+    },
+
+    updateNode(path, newNode) {
+        if (!path.length || !newNode || typeof newNode !== 'object') return null
+
+        console.log('Store.updateNode', {path, json: newNode});
+        this.editPath = path
+        // console.log( this.getNode(path) );
+
+        const updateAt = (model, path) => {
+            if (!model || !path.length) return undefined
+            const cp = path[0]
+
+            // find cp in model
+            // return model + updateAt(path.slice(1))
+
+            if (Array.isArray(model)) {
+                const mi = model.findIndex(l => l['@id'] == cp)
+                if (mi > -1) {
+                    console.log('Model is Array, found i', {mi, model});
+                    model[mi] = path.length > 1 ? updateAt(model[mi], path.slice(1)) : newNode
+                }
+            }
+            else if (typeof model === 'object'
+                && model.hasOwnProperty('@id')
+                && model['@id'] == cp
+            ) {
+                console.log('Model is object and has @ID', {cp, model});
+                model = path.length > 1
+                    ? updateAt(model, path.slice(1))
+                    : newNode
+
+            }
+            else if (typeof model === 'object'
+                && model.hasOwnProperty(cp)
+            ) {
+                console.log('Model is object and has Prop', {cp, model});
+                model[cp] = path.length > 1
+                    // ? updateAt(Array.isArray(model[cp]) ? model[cp] : [model[cp]], path.slice(1))
+                    ? updateAt(model[cp], path.slice(1))
+                    : newNode
+            }
+
+            else {
+                // return undefined
+                console.error('Undefined Model or not found!', {path, model});
+            }
+
+            return model
+        }
+
+        const findNode = (model, path, value) => {
+            model[0] = value
+            return model[0]
+        }
+        const findNode_ = (model, path) => {
+            let node = undefined
+
+            if (Array.isArray(model)) {
+                node = model.find(l => l['@id'] == path[0] )
+            }
+            // else if (typeof model === 'object' && model.hasOwnProperty(['@id'])) {
+            //     node = model['@id'] == path[0]
+            // }
+            else if (typeof model === 'object') {
+                node = model.hasOwnProperty(path[0])
+                    ? Array.isArray(model[path[0]]) ? model[path[0]] : [model[path[0]]]
+                    : undefined
+            }
+            else {
+                return null
+            }
+            if (typeof node === 'undefined') return null
+            return path.length > 1
+                ? findNode(node, path.slice(1))
+                : node
+        }
+
+        // let node = findNode(this.model, path, newNode)
+        // this.model[0] = json
+        // const newModel = updateAt(JSON.parse(JSON.stringify(this.model)), path)
+        const newModel = updateAt(this.model, path)
+        console.log('Store.updateNode', {newModel: JSON.parse(JSON.stringify(newModel))});
+        this.model = newModel.slice()
+        console.log('TODO if currentNode is part of newNode/Model -> update ...');
+
+        if (this.currentPath.length === path.length && this.currentPath.every((v, i) => v === path[i])) {
+            this.currentNode = newNode
+        }
+
+
+
+        // this.model[0] = json
+        // let node = this.getNode(path)
+        // node = json
+
+    },
+
+
+    // setCurrent(path, node) {
+    //     this.currentPath = path
+    //     this.currentNode = node
+    //     // this.setCurrentPath(path)
+    //     // this.setCurrentNode(node)
+    // },
+
+    // setCurrentPath(path) {
+    //     this.currentPath = path
+    // },
+
+    // setCurrentNode(node) {
+    //     this.currentNode = node
+    // }
+
+    getResourceFromModel(id) {
+        if (this.model === null) return false
+        return this.model.find(l => l['@id'] == id )
+    },
+
+    modelHasResource(id) {
+        return this.getResourceFromModel(id) ? true : false
+
     }
 
-    if (Array.isArray(json)) {
-      //
 
-    }
-    else if (typeof json === 'object') {
-      if (json['@graph'])
-        json = json['@graph']
-      else
-        json = [json]
-    } else {
-      return false
-    }
 
-    // if (!hasId(json[0])) return false
 
-    if (json[0]['@context']) {
-      // TODO may show @context elsewhere in the Viewer?!
-      delete json[0]['@context']
-      // json[0]['@context'] = false
-    }
+})
 
-    return json
-  }
+export default store
 
-export function getModel() {
-    return model
-  }
+// export const getModel = () => {
+//     return store.model
+// }
 
-export function getContext() {
-    return context
-    // return data.hasOwnProperty('@context')
-    //   ? data['@context']
-    //   : null
-}
 
-export function getResourceFromModel(path) {
-    if (model === null) return false
-    return model.find(l => l['@id'] == path )
-  }
+// export default {
+//     setup() {
+//       const state = reactive({ count: 0 })
 
-  export function modelHasResource(id) {
-    return getResourceFromModel(id) ? true : false
-  }
+//       function increment() {
+//         state.count++
+//       }
+
+//       // don't forget to expose the function as well.
+//       return {
+//         state,
+//         increment
+//       }
+//     }
+//   }
+
+// export const store = reactive({
+
+//     count: 0,
+
+//     increment() {
+//       this.count++
+//     }
+
+// })

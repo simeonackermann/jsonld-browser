@@ -5,11 +5,12 @@ import IconNode from './icons/IconNode.vue'
 import IconExternalLink from './icons/IconExternalLink.vue'
 import IconNodeLinked from './icons/IconNodeLinked.vue'
 import { getNodeLabel, getUrlBasename } from '../lib/utils.js'
-import {
-  getResourceFromModel,
-  modelHasResource,
-  getContext
- } from "../lib/store";
+// import {
+//   getResourceFromModel,
+//   modelHasResource,
+//   getContext
+//  } from "../lib/store";
+ import store from "../lib/store"
 
 const props = defineProps({
   value: {
@@ -37,7 +38,7 @@ const props = defineProps({
 
 const emit = defineEmits(['onSelectChildItem'])
 
-const context = getContext()
+// const context = getContext()
 
 const handleClickChildNode = (path) => {
   emit('onSelectChildItem', path)
@@ -59,10 +60,10 @@ const getNodeValueFormatClasses = (value) => {
 const isInternalLink = (key, value) => {
     if (typeof value !== 'string' ) return false
 
-    if (context && context.hasOwnProperty(key) && context[key]['@type'] == "@id") {
+    if (store.context && store.context.hasOwnProperty(key) && store.context[key]['@type'] == "@id") {
         return true;
     }
-    return modelHasResource(value)
+    return store.modelHasResource(value)
 }
 
 const isExternalLink = (key, value) => {
@@ -112,7 +113,7 @@ const objectLength = (object) => {
 
         <!-- LINK (ext/int) -->
         <div v-else-if="value.hasOwnProperty('@id') && objectLength(value) == 1">
-            {{  ( linkedNode = getResourceFromModel(value['@id']), null) }}
+            {{  ( linkedNode = store.getResourceFromModel(value['@id']), null) }}
             <div v-if="isInternalLink(predicate, value['@id'])" class="node-value link">
                 <span v-if="inArray">- </span>
                 <a class="linked-node" href="#" @click.prevent="handleClickChildNode([linkedNode['@id']])">
@@ -160,7 +161,7 @@ const objectLength = (object) => {
     <div v-else-if="isInternalLink(predicate, value)" class="node-value link">
         <a class="linked-node" href="#" @click.prevent="handleClickChildNode([value])">
             <IconNodeLinked />
-            {{getNodeLabel(getResourceFromModel(value))}}
+            {{getNodeLabel(store.getResourceFromModel(value))}}
         </a>
 
     </div>

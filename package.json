@@ -2,7 +2,9 @@
   "name": "jsonld-browser",
   "version": "0.0.1",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/jsonld-browser.umd.cjs",
   "module": "./dist/jsonld-browser.js",
   "scripts": {
@@ -11,8 +13,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "codejar": "^3.7.0",
+    "highlight.js": "^11.8.0",
     "jsonld": "^8.1.0",
-    "vue": "^3.2.45"
+    "vue": "^3.2.21"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

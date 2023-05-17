@@ -1,11 +1,11 @@
 <script setup>
-import { reactive } from 'vue'
+import { reactive, onUpdated, onBeforeMount, onBeforeUpdate } from 'vue'
 import {
     getNodeLabel,
     getUrlBasename,
     getNodeType
 } from '../lib/utils.js'
-import { modelHasResource } from "../lib/store";
+import store from "../lib/store"
 import IconNode from './icons/IconNode.vue'
 import IconNodeLinked from './icons/IconNodeLinked.vue'
 // import IconEdge from './icons/IconEdge.vue'
@@ -20,10 +20,10 @@ const props = defineProps(
             type: Array,
             // required: true
         },
-        currentSelectedPath: {
-            type: Array,
-            required: true
-        },
+        // currentSelectedPath: {
+        //     type: Array,
+        //     required: true
+        // },
         depth: {
             type: Number,
             required: true,
@@ -37,11 +37,27 @@ const props = defineProps(
     }
 )
 
-const emit = defineEmits(['onItemSelected'])
+// const emit = defineEmits(['onItemSelected'])
+let edges = []
+
+onBeforeMount(() => {
+    edges = getEdges(props.node)
+})
+
+onBeforeUpdate(() => {
+    // TODO may updat edges only if the edit was in current path ...
+    // console.log('BrowserItem, onBeforeUpdate', store.editPath);
+    edges = getEdges(props.node)
+})
+
+onUpdated(() => {
+    // TODO manage that no every time we click on a item every BrowserItem has to update ...
+    // console.log('Updated BrowserItem.vue...', {path: props.path, item: props.node});
+})
 
 const state = reactive({
     collapsed: false,
-    selected: false
+    selected: false,
 })
 
 const handleClickEdge = (e) => {
@@ -54,12 +70,14 @@ const handleClickNode = () => {
     onSelectItem(props.path, props.node)
 }
 
-const handleClickChildItem = (path, node) => {
-    onSelectItem(path, node)
-}
+// const handleClickChildItem = (path, node) => {
+//     onSelectItem(path, node)
+// }
 
 const onSelectItem = (path, node) => {
-    emit('onItemSelected', path, node)
+    // emit('onItemSelected', path, node)
+    store.currentPath = path
+    store.currentNode = node
 }
 
 const toggleCollapsed = (e) => {
@@ -79,7 +97,7 @@ const getEdges = (node) => {
                     //      may differntiate betweeen framed/extended ?!
                     if (Object.keys(node[k][0]).length > 1) return true
 
-                    return modelHasResource(node[k][0]['@id'])
+                    return store.modelHasResource(node[k][0]['@id'])
                 } else {
                     return false
                 }
@@ -105,10 +123,12 @@ const getEdges = (node) => {
 
     return edges
 }
-const edges = getEdges(props.node)
 
 const isCurrentSelected = () => {
-    return props.currentSelectedPath.toString() == props.path.toString()
+    // TODO use state.selected somehow,
+    //      because store.currentPath every BrowserItem component updates every time we click on an item...
+    //      may listen to click events somewhere else, set this item unselected
+    return state.selected && store.currentPath.toString() == props.path.toString()
 }
 
 const getPathForDom = () => {
@@ -125,12 +145,12 @@ const getPathForDom = () => {
     <div v-if="Array.isArray(node)" class="item edge" v-bind:class="{'selected': isCurrentSelected() }" :data-path="getPathForDom()">
         <div class="active-area" @click="handleClickEdge" :title="path.at(-1)"></div>
         <div class="title-wrapper">
-            <span class="toggler">
-                <i class="arrow down" v-show="!state.collapsed" @click="toggleCollapsed"></i>
-                <i class="arrow right" v-show="state.collapsed" @click="toggleCollapsed"></i>
+            <span class="toggler" @click="toggleCollapsed">
+                <i class="arrow down" v-show="!state.collapsed"></i>
+                <i class="arrow right" v-show="state.collapsed"></i>
             </span>
             <!-- <IconEdge /> -->
-            <span class="title">{{ getUrlBasename(path.at(-1)) }}</span>
+            <span class="item-title">{{ getUrlBasename(path.at(-1)) }}</span>
             <span v-if="state.collapsed">[{{ node.length}}]</span>
         </div>
         <div class="item-wrapper node-wrapper" v-show="!state.collapsed" v-for="targetItem in node">
@@ -138,9 +158,7 @@ const getPathForDom = () => {
                 v-if="targetItem['@id']"
                 :node="targetItem"
                 :path="path.concat(targetItem['@id'])"
-                :current-selected-path="currentSelectedPath"
-                :depth="depth + 1"
-                @on-item-selected="handleClickChildItem" />
+                :depth="depth + 1" />
             <div v-else>[undefined target]</div>
         </div>
     </div>
@@ -154,13 +172,13 @@ const getPathForDom = () => {
         <!-- :title="node['@id']" -->
         <div class="active-area" @click="handleClickNode" :title="node['@id']"></div>
         <div class="title-wrapper">
-            <span class="toggler" v-if="Object.keys(edges).length">
-                <i class="arrow down" v-show="!state.collapsed" @click="toggleCollapsed"></i>
-                <i class="arrow right" v-show="state.collapsed" @click="toggleCollapsed"></i>
+            <span class="toggler" v-if="Object.keys(edges).length" @click="toggleCollapsed">
+                <i class="arrow down" v-show="!state.collapsed"></i>
+                <i class="arrow right" v-show="state.collapsed"></i>
             </span>
-            <IconNodeLinked v-if="!isBlanknode && !node['@type'] && modelHasResource(node['@id'])" />
+            <IconNodeLinked v-if="!isBlanknode && !node['@type'] && store.modelHasResource(node['@id'])" />
             <IconNode v-else />
-            <span class="title">{{ getNodeLabel(node) }}</span>
+            <span class="item-title">{{ getNodeLabel(node) }}</span>
             {{ (nodeType = getNodeType(node), null) }}
             <span class="type" v-if="nodeType">
                 ({{ nodeType }})
@@ -172,9 +190,7 @@ const getPathForDom = () => {
             <browser-item
                 :node="targetdNodesArr"
                 :path="path.concat(edgeKey)"
-                :current-selected-path="currentSelectedPath"
                 :depth="depth + 1"
-                @on-item-selected="handleClickChildItem"
             />
         </div>
     </div>
@@ -235,13 +251,13 @@ const getPathForDom = () => {
 
 .item.selected > .title-wrapper .toggler i,
 .item.selected > .title-wrapper svg,
-.item.selected > .title-wrapper .title,
+.item.selected > .title-wrapper .item-title,
 .item.selected > .title-wrapper span
  {
-    color: #ebebeb;
+    color: #ededed;
 }
 
-.item.selected > .title-wrapper span:not(.title)
+.item.selected > .title-wrapper span:not(.item-title)
  {
     color: #dfdfdf;
 }
@@ -280,7 +296,7 @@ const getPathForDom = () => {
 .title-wrapper span:last-child {
 }
 
-.title-wrapper span:not(.title) {
+.title-wrapper span:not(.item-title) {
     color: #ababab;
 }
 
@@ -288,7 +304,7 @@ const getPathForDom = () => {
     border-left: 1px solid grey;
 } */
 
-.title {
+.item-title {
     padding: 0 .3rem;
     max-width: 200px;;
     overflow: hidden;

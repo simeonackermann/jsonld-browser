@@ -4,10 +4,7 @@ import { onUpdated } from 'vue'
 import NodeMeta from './ViewerNodeMeta.vue'
 import { getUrlBasename } from '../lib/utils.js'
 import ViewerValue from "./ViewerValue.vue"
-import {
-  getResourceFromModel,
-  modelHasResource
- } from "../lib/store";
+import store from "../lib/store";
 
 const props = defineProps({
   data: {
@@ -35,78 +32,62 @@ const handleClickChildNode = (path) => {
   emit('onSelectChildItem', path)
 }
 
-const viewPath = (path) => {
-  path = path.map(a => getUrlBasename(a))
-  return path.join(' > ')
-}
-
 </script>
 
 <template>
 
   <div v-if="data" class="viewer">
-
     <!-- Node is link to internal resource -->
-    <div v-if="data['@id'] && !data['@type'] && modelHasResource(data['@id'])" class="node-wrapper">
-      {{  (targetSubNode =  getResourceFromModel(data['@id']), null) }}
-        <div class="node">
-          <div class="node-key">
-            Link to resource
-          </div>
-
-          <ViewerValue
-                :value="data"
-                :predicate="[]"
-                :path="[]"
-                :value-is-link-to-internal-resource="true"
-                @on-select-child-item="handleClickChildNode"
-              />
+    <div v-if="data['@id'] && !data['@type'] && store.modelHasResource(data['@id'])" class="node-wrapper">
+      {{  (targetSubNode =  store.getResourceFromModel(data['@id']), null) }}
+      <div class="node">
+        <div class="node-key">
+          <i>Link to resource</i>
         </div>
-    </div>
 
-
-    <!-- NODE  -->
-    <div v-else-if="data['@id'] || isBlanknode">
-      <div class="path" v-if="!isBlanknode">> {{ viewPath(path) }}</div>
-
-      <div class="node-wrapper">
-        <!-- META -->
-        <NodeMeta :data="data" />
-
-        <!-- NODE-PROPERTIES -->
-        <div class="node" v-for="key in Object.keys(data).filter(a => !a.startsWith('@'))">
-
-          <div class="node-key">{{ getUrlBasename(key) }}</div>
-
-          <ViewerValue
-              :value="data[key]"
-              :predicate="key"
-              :path="path"
+        <ViewerValue
+              :value="data"
+              :predicate="[]"
+              :path="[]"
+              :value-is-link-to-internal-resource="true"
               @on-select-child-item="handleClickChildNode"
             />
-
-        </div>
       </div>
+    </div>
 
+    <!-- NODE  -->
+    <div v-else-if="data['@id'] || isBlanknode" class="node-wrapper">
+      <!-- META -->
+      <NodeMeta :data="data" />
+
+      <!-- NODE-PROPERTIES -->
+      <div class="node" v-for="key in Object.keys(data).filter(a => !a.startsWith('@'))">
+
+        <div class="node-key">{{ getUrlBasename(key) }}</div>
+
+        <ViewerValue
+            :value="data[key]"
+            :predicate="key"
+            :path="path"
+            @on-select-child-item="handleClickChildNode"
+          />
+
+      </div>
     </div>
 
     <!-- EDGE -->
-    <div v-else>
-      <div class="path">> {{ viewPath(path) }}</div>
-
-      <div class="edge-wrapper">
-        <div class="edge">
-          <div class="edge-key">{{ getUrlBasename(path[path.length-1]) }}:</div>
-          <ViewerValue
+    <div v-else class="edge-wrapper">
+      <div class="edge">
+        <div class="edge-key">{{ getUrlBasename(path[path.length-1]) }}:</div>
+        <ViewerValue
           v-for="subnode in data"
-            :value="subnode"
-            :predicate="[]"
-            :path="path"
-            :value-is-link-to-internal-resource="true"
-            :in-array="true"
-            @on-select-child-item="handleClickChildNode"
-          />
-        </div>
+          :value="subnode"
+          :predicate="[]"
+          :path="path"
+          :value-is-link-to-internal-resource="true"
+          :in-array="true"
+          @on-select-child-item="handleClickChildNode"
+        />
       </div>
     </div>
 
